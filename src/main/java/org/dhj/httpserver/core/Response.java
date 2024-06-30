@@ -35,6 +35,8 @@ public class Response {
 
         if (body != null && !body.isEmpty()) {
             response.append("\n").append(body);
+        } else {
+            response.append("\n");
         }
 
         System.out.printf("response => %s", response);

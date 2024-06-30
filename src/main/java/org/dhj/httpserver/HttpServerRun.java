@@ -1,26 +1,28 @@
 package org.dhj.httpserver;
 
+import org.dhj.httpserver.api.HttpServer;
+import org.dhj.httpserver.api.impl.MultiThreadHttpServer;
 import org.dhj.httpserver.constant.Version;
 import org.dhj.httpserver.core.Response;
 import org.dhj.httpserver.core.Routers;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Map;
 
-public class Server {
-    public static void main(String[] args) throws IOException {
-        Routers.addGet("/", request -> new Response()
+public class HttpServerRun {
+
+    public static void main(String[] args) {
+        Routers.addGet("/", _ -> new Response()
                 .setVersion(Version.HTTP_1_1)
                 .setStatus(200)
+                .setText("OK")
+                .setHeaders(Map.of("Content-Type", "text/plain", "Content-Length", "0"))
                 .setBody("")
-                .setText("OK"));
+        );
 
         Routers.addGet("/hello", _ -> new Response()
                 .setVersion(Version.HTTP_1_1)
-                .setText("OK")
                 .setStatus(200)
+                .setText("OK")
                 .setHeaders(Map.of("Content-Type", "text/html"))
                 .setBody("""
                         <h1>Hello World</h1>
@@ -28,8 +30,8 @@ public class Server {
 
         Routers.addPost("/json", _ -> new Response()
                 .setVersion(Version.HTTP_1_1)
-                .setText("OK")
                 .setStatus(200)
+                .setText("OK")
                 .setHeaders(Map.of("Content-Type", "application/json"))
                 .setBody("""
                         {
@@ -38,13 +40,7 @@ public class Server {
                         """));
 
         final int port = 8888;
-        try (ServerSocket server = new ServerSocket(port)) {
-            System.out.printf("server listening on port %d...\n", port);
-            while (true) {
-                Socket socket = server.accept();
-                Routers.route(socket);
-                System.out.println("server process complete...\n");
-            }
-        }
+        HttpServer httpServer = new MultiThreadHttpServer();
+        httpServer.start(port);
     }
 }

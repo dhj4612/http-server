@@ -43,9 +43,9 @@ public class Routers {
         if (handler == null) {
             write.write(new Response()
                     .setVersion(Version.HTTP_1_1)
-                    .setHeaders(Map.of("Content-Type", "text/html"))
-                    .setText("NotFound")
                     .setStatus(404)
+                    .setText("NotFound")
+                    .setHeaders(Map.of("Content-Type", "text/html"))
                     .setBody("""
                             <h1>404 NotFound</h1>
                             """)

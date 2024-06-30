@@ -31,7 +31,7 @@ public final class Request {
         String line;
         BufferedReader buffer = new BufferedReader(new InputStreamReader(is));
 
-        // 忽略空行，空行之后全部为body部分，单独处理
+        // ignore blank line, after that is body part data
         while ((line = buffer.readLine()) != null && !line.isEmpty()) {
             request.append(line).append("\n");
         }
@@ -40,29 +40,30 @@ public final class Request {
         Version version = Version.UNKNOWN;
         String path = null;
         String body = null;
-        Map<String, String> headers = null;
+        Map<String, String> headers = new HashMap<>(16);
         List<String> lines = request.toString().lines().toList();
+        String tempLine;
         for (int i = 0; i < lines.size(); i++) {
-            final String requestLine = lines.get(i);
+            tempLine = lines.get(i);
             if (i == 0) {
-                String[] splitWithSpace = requestLine.split(" ");
+                String[] splitWithSpace = tempLine.split(" ");
                 method = Method.parse(splitWithSpace[0]);
                 path = splitWithSpace[1];
                 version = Version.parse(splitWithSpace[2]);
-            } else if (requestLine.contains(": ")) { // request header part
-                String[] split = requestLine.split(": ");
-                if (headers == null) {
-                    headers = new HashMap<>(16);
+            } else if (tempLine.contains(": ")) { // request header part
+                String[] split = tempLine.split(": ");
+                if (split.length < 2) {
+                    throw new IllegalArgumentException("Invalid header line: " + tempLine);
                 }
                 headers.put(split[0], split[1]);
             }
         }
 
         // read the body
-        if (headers != null) {
-            if (headers.containsKey("Content-Length") || headers.containsKey("content-length")) {
-                int len = Integer.parseInt(headers.getOrDefault("Content-Length",
-                        headers.getOrDefault("content-length", "0")));
+        if (headers.containsKey("Content-Length") || headers.containsKey("content-length")) {
+            int len = Integer.parseInt(headers.getOrDefault("Content-Length",
+                    headers.getOrDefault("content-length", "0")));
+            if (len > 0) {
                 char[] chars = new char[len];
                 int read = buffer.read(chars, 0, len);
                 if (read != -1) {
