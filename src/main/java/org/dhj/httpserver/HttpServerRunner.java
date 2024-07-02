@@ -8,14 +8,14 @@ import org.dhj.httpserver.core.Routers;
 
 import java.util.Map;
 
-public class HttpServerRun {
+public class HttpServerRunner {
 
     public static void main(String[] args) {
         Routers.addGet("/", _ -> new Response()
                 .setVersion(Version.HTTP_1_1)
                 .setStatus(200)
                 .setText("OK")
-                .setHeaders(Map.of("Content-Type", "text/plain", "Content-Length", "0"))
+                .setHeaders(Map.of("Content-Type", "text/plain"))
                 .setBody("")
         );
 

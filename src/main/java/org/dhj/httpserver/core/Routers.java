@@ -29,7 +29,7 @@ public class Routers {
 
     public static void route(Socket socket) throws IOException {
         Request request = Request.parse(socket.getInputStream());
-        System.out.printf("request => %s \n", request.toString());
+        System.out.printf("request => %s\n", request.toString());
 
         Route handler = routes.stream()
                 .filter(route ->
@@ -45,7 +45,7 @@ public class Routers {
                     .setVersion(Version.HTTP_1_1)
                     .setStatus(404)
                     .setText("NotFound")
-                    .setHeaders(Map.of("Content-Type", "text/html"))
+                    .setHeaders(Map.of("Content-Type", "text/html", "Connection", "close"))
                     .setBody("""
                             <h1>404 NotFound</h1>
                             """)

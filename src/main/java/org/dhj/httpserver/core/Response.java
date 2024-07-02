@@ -21,25 +21,26 @@ public class Response {
     @Override
     public String toString() {
         StringBuilder response = new StringBuilder();
-        response.append(version.toString())
-                .append(" ").append(status).append(" ")
-                .append(text).append("\n");
+        response.append(version.toString()).append(" ")
+                .append(status).append(" ")
+                .append(text)
+                .append("\r\n");
 
         if (headers != null && !headers.isEmpty()) {
             String headers = this.headers.entrySet()
                     .stream()
                     .map(entry -> entry.getKey() + ": " + entry.getValue())
-                    .collect(Collectors.joining("\n"));
-            response.append(headers).append("\n");
+                    .collect(Collectors.joining("\r\n"));
+            response.append(headers).append("\r\n");
         }
 
         if (body != null && !body.isEmpty()) {
-            response.append("\n").append(body);
+            response.append("\r\n").append(body);
         } else {
-            response.append("\n");
+            response.append("\r\n");
         }
 
-        System.out.printf("response => %s", response);
+        System.out.printf("response => \n%s", response);
         return response.toString().trim();
     }
 }

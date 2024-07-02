@@ -23,7 +23,7 @@ public class MultiThreadHttpServer implements HttpServer {
         new Thread(() -> { // async start
             try (final ServerSocket instance = new ServerSocket(port)) {
                 serverSocket = instance;
-                System.out.printf("Server listening on port %d...\n", port);
+                System.out.printf("Server listening on port %d...\n\n", port);
                 while (!stopped) {
                     Socket client = serverSocket.accept();
                     executor.execute(() -> {
@@ -32,7 +32,10 @@ public class MultiThreadHttpServer implements HttpServer {
                             long start = System.currentTimeMillis();
                             Routers.route(client);
                             long end = System.currentTimeMillis();
-                            System.out.println("Server process complete, time: " + (end - start) + "ms" + "\n");
+                            System.out.printf("""
+                                    Server process complete, time: %dms
+                                    
+                                    """, (end - start));
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -45,7 +48,10 @@ public class MultiThreadHttpServer implements HttpServer {
     }
 
     @Override
-    public void stop() {
+    public synchronized void stop() {
+        if (stopped) {
+            return;
+        }
         stopped = true;
         executor.shutdown();
         try {
